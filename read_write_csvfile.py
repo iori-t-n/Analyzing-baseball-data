@@ -1,9 +1,6 @@
 """
 Project for Week 3 of "Python Data Analysis".
 Read and write CSV files using a dictionary of dictionaries.
-
-Be sure to read the project description page for further information
-about the expected behavior of the program.
 """
 
 import csv
@@ -17,9 +14,16 @@ def read_csv_fieldnames(filename, separator, quote):
     Ouput:
       A list of strings corresponding to the field names in
       the given CSV file.
+    
+    This function assumes that the first row of the CSV file contains the field names. 
     """
-    return []
+    with open(filename, 'r', newline= '') as csvfile:
+        csvreader = csv.DictReader(csvfile, delimiter= separator, quotechar= quote)
+        fieldname = csvreader.fieldnames
+    return fieldname
 
+# Simple test
+# print(read_csv_fieldnames("table3.csv", ",", "'"))
 
 def read_csv_as_list_dict(filename, separator, quote):
     """
@@ -32,8 +36,15 @@ def read_csv_as_list_dict(filename, separator, quote):
       corresponds to a row in the CSV file.  The dictionaries in the
       list map the field names to the field values for that row.
     """
-    return []
+    with open(filename, 'r', newline= '') as csvfile:
+        csvreader = csv.DictReader(csvfile, delimiter= separator, quotechar= quote)
+        list = []
+        for item in csvreader:
+            list.append(item)
+    return list
 
+# Simple test
+# print(read_csv_as_list_dict("table3.csv", ",", "'"))
 
 def read_csv_as_nested_dict(filename, keyfield, separator, quote):
     """
@@ -48,7 +59,13 @@ def read_csv_as_nested_dict(filename, keyfield, separator, quote):
       CSV file.  The inner dictionaries map the field names to the
       field values for that row.
     """
+    with open(filename, 'r', newline= '') as csvfile:
+        csvreader = csv.DictReader(csvfile, fieldnames= keyfield, delimiter= separator, quotechar= quote)
+        
     return {}
+
+# Simple test
+# print(read_csv_as_nested_dict("table3.csv", ",", "'"))
 
 
 def write_csv_from_list_dict(filename, table, fieldnames, separator, quote):
