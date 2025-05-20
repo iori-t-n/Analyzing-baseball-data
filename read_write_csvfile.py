@@ -36,9 +36,9 @@ def read_csv_as_list_dict(filename, separator, quote):
       corresponds to a row in the CSV file.  The dictionaries in the
       list map the field names to the field values for that row.
     """
+    list = []
     with open(filename, 'r', newline= '') as csvfile:
         csvreader = csv.DictReader(csvfile, delimiter= separator, quotechar= quote)
-        list = []
         for item in csvreader:
             list.append(item)
     return list
@@ -59,13 +59,16 @@ def read_csv_as_nested_dict(filename, keyfield, separator, quote):
       CSV file.  The inner dictionaries map the field names to the
       field values for that row.
     """
+    nested_dict = {}
     with open(filename, 'r', newline= '') as csvfile:
-        csvreader = csv.DictReader(csvfile, fieldnames= keyfield, delimiter= separator, quotechar= quote)
-        
-    return {}
+        csvreader = csv.DictReader(csvfile, delimiter= separator, quotechar= quote)
+        for row in csvreader:
+            outer_key = row[keyfield]
+            nested_dict[outer_key] = {k: v for k, v in row.items()}
+    return nested_dict
 
 # Simple test
-# print(read_csv_as_nested_dict("table3.csv", ",", "'"))
+# print(read_csv_as_nested_dict("table1.csv", "Field1", ",", "'"))
 
 
 def write_csv_from_list_dict(filename, table, fieldnames, separator, quote):
