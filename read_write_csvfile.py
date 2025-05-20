@@ -64,7 +64,7 @@ def read_csv_as_nested_dict(filename, keyfield, separator, quote):
         csvreader = csv.DictReader(csvfile, delimiter= separator, quotechar= quote)
         for row in csvreader:
             outer_key = row[keyfield]
-            nested_dict[outer_key] = {k: v for k, v in row.items()}
+            nested_dict[outer_key] = {key: value for key, value in row.items()}
     return nested_dict
 
 # Simple test
@@ -84,4 +84,13 @@ def write_csv_from_list_dict(filename, table, fieldnames, separator, quote):
       given fieldnames.  The CSV file should use the given separator and
       quote characters.  All non-numeric fields will be quoted.
     """
-    pass
+    with open(filename, 'w', newline='') as csvfile:
+        csvwriter = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=separator, quotechar=quote, quoting=csv.QUOTE_NONNUMERIC)
+        csvwriter.writeheader()
+        for row in table:
+            csvwriter.writerow(row)
+
+# Simple test
+# table =  [{'a': 10, 'b': 11, 'c': 12, 'd': 13, 'e': 14}, {'a': 20, 'b': 21, 'c': 22, 'd': 23, 'e': 24}, {'a': 30, 'b': 31, 'c': 32, 'd': 33, 'e': 34}, {'a': 40, 'b': 41, 'c': 42, 'd': 43, 'e': 44}]
+# fieldnames = ['a', 'b', 'c', 'd', 'e']
+# print(write_csv_from_list_dict("output1.csv", table, fieldnames, ",", '"'))
