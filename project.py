@@ -120,11 +120,6 @@ def filter_by_year(statistics, year, yearid):
     """
     return [row for row in statistics if row[yearid] == str(year)]
 
-# # Simple test
-# stat = [{"year" : "2000", "bat_stat" : "0.05"}, {"year" : "2001", "bat_stat" : "0.06"},{"year" : "2002", "bat_stat" : "0.07"},]
-# yearid = "year"
-# year = 2002
-# print(filter_by_year(stat, year, yearid))
 
 
 def top_player_ids(info, statistics, formula, numplayers):
@@ -141,6 +136,7 @@ def top_player_ids(info, statistics, formula, numplayers):
       computed by formula, of the top numplayers players sorted in
       decreasing order of the computed statistic.
     """
+    read_csv_as_nested_dict(info['masterfile'], info['playerid'], separator, quote)
     tuple_list = []
     for row in statistics:
         tuple_stat = (row[info['playerid']], formula(info, row))
@@ -150,23 +146,7 @@ def top_player_ids(info, statistics, formula, numplayers):
     tuple_list.sort(key=lambda pair: pair[1], reverse=True)
     return tuple_list[:numplayers]
 
-# # Simple test
-# info = {'masterfile': '', 'battingfile': '', 'separator': ',', 'quote': '"', 
-# 'playerid': 'player', 'firstname': 'firstname', 'lastname': 'lastname', 'yearid': 'year', 
-# 'atbats': 'atbats', 'hits': 'hits', 'doubles': 'doubles', 'triples': 'triples', 'homeruns': 'homers', 'walks': 'walks', 
-# 'battingfields': ['atbats', 'hits', 'doubles', 'triples', 'homers', 'walks']}
-# statistics = [{'player': 'player0', 'homers': '5', 'doubles': '20', 'walks': '25', 'atbats': '300', 'triples': '1', 'year': '2020', 'hits': '108'},
-# {'player': 'player1', 'homers': '4', 'doubles': '5', 'walks': '10', 'atbats': '499', 'triples': '3', 'year': '2020', 'hits': '170'},
-# {'player': 'player2', 'homers': '20', 'doubles': '18', 'walks': '85', 'atbats': '513', 'triples': '5', 'year': '2020', 'hits': '129'},
-# {'player': 'player5', 'homers': '22', 'doubles': '3', 'walks': '37', 'atbats': '197', 'triples': '2', 'year': '2020', 'hits': '67'},
-# {'player': 'player6', 'homers': '18', 'doubles': '33', 'walks': '25', 'atbats': '542', 'triples': '7', 'year': '2020', 'hits': '166'},
-# {'player': 'player7', 'homers': '10', 'doubles': '19', 'walks': '27', 'atbats': '500', 'triples': '2', 'year': '2020', 'hits': '161'},
-# {'player': 'player8', 'homers': '25', 'doubles': '42', 'walks': '30', 'atbats': '589', 'triples': '13', 'year': '2020', 'hits': '176'}]
-# formula = batting_average
-# numplayers = 1
 
-# print(top_player_ids(info, statistics, formula, numplayers))
-# # expected [('player7', 0.322)] 
 
 def lookup_player_names(info, top_ids_and_stats):
     """
@@ -180,7 +160,16 @@ def lookup_player_names(info, top_ids_and_stats):
       the input and "FirstName LastName" is the name of the player
       corresponding to the player ID in the input.
     """
-    return []
+    result = []
+    player_list = read_csv_as_list_dict(info["masterfile"], ",", "'")
+    for player_id, stat in top_ids_and_stats:
+        for row in player_list:
+            if row[info['playerid']] == player_id:
+                name = f"{float(stat):.3f} --- {row[info['firstname']]} {row[info['lastname']]}"
+                result.append(name)
+                break
+    return result
+
 
 
 def compute_top_stats_year(info, formula, numplayers, year):
