@@ -213,7 +213,17 @@ def aggregate_by_player_id(statistics, playerid, fields):
       are dictionaries of aggregated stats.  Only the fields from the fields
       input will be aggregated in the aggregated stats dictionaries.
     """
-    return {}
+    result = {}
+    for row in statistics:
+        player_id = row[playerid]
+        if player_id not in result:
+            result[player_id] = {playerid: player_id}
+            for field in fields:
+                result[player_id][field] = 0
+        for field in fields:
+            result[player_id][field] += int(row[field])
+    return result
+    
 
 
 def compute_top_stats_career(info, formula, numplayers):
@@ -225,7 +235,18 @@ def compute_top_stats_career(info, formula, numplayers):
                     computes a compound statistic
       numplayers  - Number of top players to return
     """
-    return []
+    # Step 1: Read batting data from CSV
+    batting_stats = read_csv_as_list_dict(info['battingfile'], info['separator'], info['quote'])
+
+    # Step 2: Aggregate all stats by player ID across seasons
+    aggregated_stats = aggregate_by_player_id(batting_stats, info['playerid'], info['battingfields'])
+
+    # Step 3: Get top player IDs and stats using the formula
+    top_stats = top_player_ids(info, list(aggregated_stats.values()), formula, numplayers)
+
+    # Step 4: Format names and stats for display
+    return lookup_player_names(info, top_stats)
+
 
 
 ##
@@ -302,4 +323,4 @@ def test_baseball_statistics():
 # Make sure the following call to test_baseball_statistics is
 # commented out when submitting to OwlTest/CourseraTest.
 
-# test_baseball_statistics()
+test_baseball_statistics()
