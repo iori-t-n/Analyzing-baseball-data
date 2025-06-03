@@ -136,7 +136,6 @@ def top_player_ids(info, statistics, formula, numplayers):
       computed by formula, of the top numplayers players sorted in
       decreasing order of the computed statistic.
     """
-    read_csv_as_nested_dict(info['masterfile'], info['playerid'], separator, quote)
     tuple_list = []
     for row in statistics:
         tuple_stat = (row[info['playerid']], formula(info, row))
@@ -161,7 +160,7 @@ def lookup_player_names(info, top_ids_and_stats):
       corresponding to the player ID in the input.
     """
     result = []
-    player_list = read_csv_as_list_dict(info["masterfile"], ",", "'")
+    player_list = read_csv_as_list_dict(info["masterfile"], info['separator'], info['quote'])
     for player_id, stat in top_ids_and_stats:
         for row in player_list:
             if row[info['playerid']] == player_id:
@@ -185,7 +184,18 @@ def compute_top_stats_year(info, formula, numplayers, year):
       Returns a list of strings for the top numplayers in the given year
       according to the given formula.
     """
-    return []
+   # Read the full batting file first
+    all_stats = read_csv_as_list_dict(info['battingfile'], info['separator'], info['quote'])
+
+    # Filter by the specified year
+    year_list = filter_by_year(all_stats, year, info['yearid'])
+
+    # Compute top players
+    top_players = top_player_ids(info, year_list, formula, numplayers)
+
+    # Lookup player names
+    return lookup_player_names(info, top_players)
+
 
 
 ##
