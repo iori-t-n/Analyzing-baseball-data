@@ -19,4 +19,4 @@ https://storage.googleapis.com/codeskulptor-isp/course3/Batting_2016.csv
 
 Each line in the file Master.csv (and Master_2016.csv) is indexed by a unique field, "playerID", that corresponds to each player that has played in Major League Baseball.  Other fields in the file include the player's first and last names.  The file Batting.csv (and Batting_2016.csv) includes season-by-season batting data for each player. The first field identifies the player via his ID while the rightmost fields contain integers that correspond to the player's performance in various basic statistical categories.
 
-This project will focus on writing code that will compute several common batting statistics from the data in these CSV files.
+This project focuses on writing code that compute several common batting statistics from the data in these CSV files.
